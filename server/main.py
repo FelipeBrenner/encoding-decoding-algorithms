@@ -1,18 +1,53 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
+
+from encoding import *
 
 app = Flask(__name__)
 cors = CORS(app, origins="*")
 
-@app.route("/api/users", methods=['GET'])
-def users():
+
+@app.route("/algorithms", methods=["GET"])
+def algorithms():
   return jsonify({
-    "users": [
-      'arpan',
-      'zach',
-      'jessie'
+    "algorithms": [
+      {"key": "eliasgamma", "name": "Elias-Gamma"},
     ]
   })
+
+
+@app.route("/encode", methods=["POST"])
+def encode():
+  algorithm = request.json.get("algorithm")
+  word = request.json.get("word")
+
+  if algorithm == "eliasgamma":
+    encoder = EliasGammaEncoding()
+  else:
+    return "Invalid algorithm selected.", 400
+
+  codeword = [encoder.encode(s) for s in word]
+
+  return jsonify({"codeword": codeword})
+
+
+@app.route("/decode", methods=["POST"])
+def decode():
+  algorithm = request.json.get("algorithm")
+  codeword = request.json.get("codeword")
+
+  if algorithm == "eliasgamma":
+    decoder = EliasGammaEncoding()
+  else:
+    return "Invalid algorithm selected.", 400
+
+  try:
+    word = [decoder.decode(c) for c in codeword]
+  except:
+    return "Unable to decode codeword using selected algorithm.", 400
+
+  return jsonify({"word": ''.join(word)})
+
 
 if __name__ == "__main__":
   app.run(debug=True, port=8080)
