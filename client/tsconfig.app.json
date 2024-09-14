@@ -18,7 +18,15 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": "src",
+
+    /* My Settings */
+    "paths": {
+      "@api": ["api/index.ts"],
+      "@contexts": ["contexts/index.ts"],
+      "@themes": ["themes/index.ts"]
+    }
   },
   "include": ["src"]
 }

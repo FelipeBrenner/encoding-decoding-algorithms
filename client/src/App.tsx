@@ -1,35 +1,132 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import * as Styles from "./App.styles";
+import {
+  CircularProgress,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
+  TextField,
+} from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import { useGetAlgorithms, usePostDecode, usePostEncode } from "@api";
 
-function App() {
-  const [count, setCount] = useState(0)
+export const App = () => {
+  const { data: algorithmsData, isLoading } = useGetAlgorithms();
+  const {
+    mutate: mutateEncode,
+    data: encodeData,
+    isPending: isPendingEncode,
+  } = usePostEncode();
+  const {
+    mutate: mutateDecode,
+    data: decodeData,
+    isPending: isPendingDecode,
+  } = usePostDecode();
+  const [algorithm, setAlgorithm] = useState("");
+  const [encodingMessage, setEncodingMessage] = useState("");
+  const [decodingMessage, setDecodingMessage] = useState("");
+
+  useEffect(() => {
+    if (algorithmsData.length === 1) setAlgorithm(algorithmsData[0].key);
+  }, [algorithmsData]);
+
+  const handleChangeAlgorithm = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setAlgorithm(event.target.value);
+  };
+
+  const handleChangeEncodingMessage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setEncodingMessage(event.target.value);
+  };
+
+  const handleChangeDecodingMessage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setDecodingMessage(event.target.value);
+  };
+
+  const handleClickEncode = () => {
+    mutateEncode({
+      algorithm,
+      word: encodingMessage,
+    });
+  };
+
+  const handleClickDecode = () => {
+    mutateDecode({
+      algorithm,
+      codeword: decodingMessage.split(" "),
+    });
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
-
-export default App
+    <Styles.Wrapper>
+      <FormControl>
+        <FormLabel>Selecione o algoritmo</FormLabel>
+        <Styles.WrapperAlgorithms>
+          {isLoading ? (
+            <CircularProgress size={16} />
+          ) : (
+            <RadioGroup row value={algorithm} onChange={handleChangeAlgorithm}>
+              {algorithmsData.map((algorithm) => (
+                <FormControlLabel
+                  key={algorithm.key}
+                  value={algorithm.key}
+                  label={algorithm.name}
+                  control={<Radio />}
+                />
+              ))}
+            </RadioGroup>
+          )}
+        </Styles.WrapperAlgorithms>
+      </FormControl>
+      <Styles.WrapperMessage>
+        <TextField
+          fullWidth
+          label="Mensagem para codificar"
+          value={encodingMessage}
+          onChange={handleChangeEncodingMessage}
+        />
+        <LoadingButton
+          onClick={handleClickEncode}
+          loading={isPendingEncode}
+          style={{
+            width: 110,
+          }}
+        >
+          Codificar
+        </LoadingButton>
+      </Styles.WrapperMessage>
+      {!!encodeData?.codeword?.length && (
+        <Styles.WrapperResult>
+          {encodeData?.codeword.map((word) => word).join(" ")}
+        </Styles.WrapperResult>
+      )}
+      <Styles.WrapperMessage>
+        <TextField
+          fullWidth
+          label="Mensagem para decodificar"
+          value={decodingMessage}
+          onChange={handleChangeDecodingMessage}
+        />
+        <LoadingButton
+          onClick={handleClickDecode}
+          loading={isPendingDecode}
+          style={{
+            width: 110,
+          }}
+        >
+          Decodificar
+        </LoadingButton>
+      </Styles.WrapperMessage>
+      {!!decodeData?.word && (
+        <Styles.WrapperResult>{decodeData.word}</Styles.WrapperResult>
+      )}
+    </Styles.Wrapper>
+  );
+};
