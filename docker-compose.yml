@@ -1,0 +1,17 @@
+services:
+
+  server:
+    build:
+      context: ./server
+    container_name: coding-app-server
+    command: flask run --host=0.0.0.0 --port=80
+    networks:
+      - local
+    volumes:
+      - ./server/src:/app
+    ports:
+      - "80:80"
+
+
+networks:
+  local:
