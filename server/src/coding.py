@@ -36,9 +36,26 @@ class EliasGammaEncoding:
 
         raise ValueError(f"Could not encode symbol: {symbol}")
 
-    def decode(self, codeword) -> int:
+    def decode(self, codeword) -> str:
         bi = codeword.index(self.stopbit)
         final = len(codeword)
         prefix = codeword[:bi]
         suffix = codeword[bi+1:final]
         return chr( 2**len(prefix) + int(suffix, 2) )
+
+class GolombEncoding:
+
+    def __init__(self):
+        self.k = 7
+        self.stopbit = '1'
+
+    def encode(self, symbol) -> str:
+        d = ord(symbol)
+        return '0' * (d // self.k) + self.stopbit + format(d % self.k, 'b')  # prefix + stopbit + suffix
+
+    def decode(self, codeword) -> str:
+        bi = codeword.index(self.stopbit)
+        final = len(codeword)
+        prefix = codeword[:bi]
+        suffix = codeword[bi+1:final]
+        return chr( len(prefix) * self.k + int(suffix, 2) )

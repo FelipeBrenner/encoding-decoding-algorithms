@@ -12,6 +12,7 @@ def algorithms():
   return jsonify({
     "algorithms": [
       {"key": "eliasgamma", "name": "Elias-Gamma"},
+      {"key": "golomb", "name": "Golomb"},
     ]
   })
 
@@ -23,6 +24,8 @@ def encode():
 
   if algorithm == "eliasgamma":
     encoder = EliasGammaEncoding()
+  elif algorithm == "golomb":
+    encoder = GolombEncoding()
   else:
     return "Invalid algorithm selected.", 400
 
@@ -38,6 +41,8 @@ def decode():
 
   if algorithm == "eliasgamma":
     decoder = EliasGammaEncoding()
+  elif algorithm == "golomb":
+    decoder = GolombEncoding()
   else:
     return "Invalid algorithm selected.", 400
 
