@@ -13,6 +13,7 @@ def algorithms():
     "algorithms": [
       {"key": "eliasgamma", "name": "Elias-Gamma"},
       {"key": "golomb", "name": "Golomb"},
+      {"key": "fib", "name": "Fibonacci/Zeckendorf"},
     ]
   })
 
@@ -26,6 +27,8 @@ def encode():
     encoder = EliasGammaEncoding()
   elif algorithm == "golomb":
     encoder = GolombEncoding()
+  elif algorithm == "fib":
+    encoder = FibEncoding()
   else:
     return "Invalid algorithm selected.", 400
 
@@ -43,6 +46,8 @@ def decode():
     decoder = EliasGammaEncoding()
   elif algorithm == "golomb":
     decoder = GolombEncoding()
+  elif algorithm == "fib":
+    decoder = FibEncoding()
   else:
     return "Invalid algorithm selected.", 400
 

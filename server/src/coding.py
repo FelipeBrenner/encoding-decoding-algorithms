@@ -46,7 +46,7 @@ class EliasGammaEncoding:
 class GolombEncoding:
 
     def __init__(self):
-        self.k = 7
+        self.k = 8
         self.stopbit = '1'
 
     def encode(self, symbol) -> str:
@@ -59,3 +59,50 @@ class GolombEncoding:
         prefix = codeword[:bi]
         suffix = codeword[bi+1:final]
         return chr( len(prefix) * self.k + int(suffix, 2) )
+    
+class FibEncoding:
+
+    def __init__(self):
+        self.stopbit = '1'
+
+    def encode(self, symbol) -> str:
+        d = ord(symbol)
+
+        seq = self._gen_fib_d(d)
+        bits = ['0'] * len(seq)
+
+        _total = 0
+        for i, v in enumerate(seq[-1::-1]):
+            if _total + v <= d:
+                _total += v
+                bits[-1-i] = '1'
+                if _total == d:
+                    break
+        return ''.join(bits) + self.stopbit
+
+    def decode(self, codeword) -> int:
+        seq = self._gen_fib_n(len(codeword))
+        d = 0
+        bits = list(codeword)
+        for i, v in enumerate(seq):
+            if bits[i] == '1':
+                d += v
+        return chr(d)
+    
+    def _gen_fib_d(self, d) -> list[int]:
+        seq = []
+        last: int = 1
+        next: int = 1
+        while next < d:
+            seq.append(next)
+            last, next = next, last + next
+        return seq
+
+    def _gen_fib_n(self, n) -> list[int]:
+        seq = []
+        last: int = 1
+        next: int = 1
+        for _ in range(1, n):
+            seq.append(next)
+            last, next = next, last + next
+        return seq
