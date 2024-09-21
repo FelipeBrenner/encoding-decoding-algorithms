@@ -11,7 +11,7 @@ interface IPostDecodeResponse {
 }
 
 export const usePostDecode = () => {
-  const { mutate, data, isPending } = useMutation<
+  const { mutate, data, isPending, reset } = useMutation<
     IPostDecodeResponse,
     Error,
     IPostDecodeVariables
@@ -22,5 +22,5 @@ export const usePostDecode = () => {
     },
   });
 
-  return { mutate, data, isPending };
+  return { mutate, data, isPending, reset };
 };

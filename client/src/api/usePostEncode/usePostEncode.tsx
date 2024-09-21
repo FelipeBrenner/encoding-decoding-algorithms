@@ -11,7 +11,7 @@ interface IPostEncodeResponse {
 }
 
 export const usePostEncode = () => {
-  const { mutate, data, isPending } = useMutation<
+  const { mutate, data, isPending, reset } = useMutation<
     IPostEncodeResponse,
     Error,
     IPostEncodeVariables
@@ -22,5 +22,5 @@ export const usePostEncode = () => {
     },
   });
 
-  return { mutate, data, isPending };
+  return { mutate, data, isPending, reset };
 };

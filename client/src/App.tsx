@@ -18,11 +18,13 @@ export const App = () => {
     mutate: mutateEncode,
     data: encodeData,
     isPending: isPendingEncode,
+    reset: resetEncode,
   } = usePostEncode();
   const {
     mutate: mutateDecode,
     data: decodeData,
     isPending: isPendingDecode,
+    reset: resetDecode,
   } = usePostDecode();
   const [algorithm, setAlgorithm] = useState("");
   const [encodingMessage, setEncodingMessage] = useState("");
@@ -36,6 +38,10 @@ export const App = () => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setAlgorithm(event.target.value);
+    setEncodingMessage("");
+    setDecodingMessage("");
+    resetEncode();
+    resetDecode();
   };
 
   const handleChangeEncodingMessage = (
