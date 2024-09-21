@@ -59,13 +59,9 @@ export const encodeHuffman = (word: string) => {
     }
   }
 
-  console.log("freq: ", freq);
-
   const huffmanTree = buildHuffmanTree(freq);
-  console.log("huffmanTree: ", JSON.stringify(huffmanTree));
 
   const huffmanCodes = generateHuffmanCodes(huffmanTree);
-  console.log("huffmanCodes: ", huffmanCodes);
 
   let encodedString = "";
   for (const char of word) {
