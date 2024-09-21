@@ -23,6 +23,7 @@
 
     /* My Settings */
     "paths": {
+      "@algorithms": ["algorithms/index.ts"],
       "@api": ["api/index.ts"],
       "@contexts": ["contexts/index.ts"],
       "@themes": ["themes/index.ts"]

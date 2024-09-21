@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { useGetAlgorithms, usePostDecode, usePostEncode } from "@api";
+import { decodeHuffman, encodeHuffman } from "@algorithms";
 
 export const App = () => {
   const { data: algorithmsData, isLoading } = useGetAlgorithms();
@@ -27,6 +28,10 @@ export const App = () => {
   const [algorithm, setAlgorithm] = useState("");
   const [encodingMessage, setEncodingMessage] = useState("");
   const [decodingMessage, setDecodingMessage] = useState("");
+  const [huffmanEncodedTree, setHuffmanEncodedTree] = useState("");
+  const [huffmanDecodingTree, setHuffmanDecodingTree] = useState("");
+  const [huffmanEncoded, setHuffmanEncoded] = useState("");
+  const [huffmanDecoded, setHuffmanDecoded] = useState("");
 
   useEffect(() => {
     if (algorithmsData.length === 1) setAlgorithm(algorithmsData[0].key);
@@ -50,7 +55,20 @@ export const App = () => {
     setDecodingMessage(event.target.value);
   };
 
+  const handleChangeHuffmanDecodingTree = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setHuffmanDecodingTree(event.target.value);
+  };
+
   const handleClickEncode = () => {
+    if (algorithm === "huffman") {
+      const { encoded, tree } = encodeHuffman(encodingMessage);
+      setHuffmanEncoded(encoded);
+      setHuffmanEncodedTree(tree);
+      return;
+    }
+
     mutateEncode({
       algorithm,
       word: encodingMessage,
@@ -58,6 +76,12 @@ export const App = () => {
   };
 
   const handleClickDecode = () => {
+    if (algorithm === "huffman") {
+      const decoded = decodeHuffman(decodingMessage, huffmanDecodingTree);
+      setHuffmanDecoded(decoded);
+      return;
+    }
+
     mutateDecode({
       algorithm,
       codeword: decodingMessage.split(" "),
@@ -73,7 +97,13 @@ export const App = () => {
             <CircularProgress size={16} />
           ) : (
             <RadioGroup row value={algorithm} onChange={handleChangeAlgorithm}>
-              {algorithmsData.map((algorithm) => (
+              {[
+                ...algorithmsData,
+                {
+                  key: "huffman",
+                  name: "Huffman",
+                },
+              ].map((algorithm) => (
                 <FormControlLabel
                   key={algorithm.key}
                   value={algorithm.key}
@@ -102,10 +132,17 @@ export const App = () => {
           Codificar
         </LoadingButton>
       </Styles.WrapperMessage>
-      {!!encodeData?.codeword?.length && (
-        <Styles.WrapperResult>
-          {encodeData?.codeword.map((word) => word).join(" ")}
-        </Styles.WrapperResult>
+      {algorithm === "huffman" && huffmanEncoded ? (
+        <>
+          <Styles.WrapperResult>{huffmanEncoded}</Styles.WrapperResult>
+          <Styles.WrapperResult>{huffmanEncodedTree}</Styles.WrapperResult>
+        </>
+      ) : (
+        !!encodeData?.codeword?.length && (
+          <Styles.WrapperResult>
+            {encodeData?.codeword.map((word) => word).join(" ")}
+          </Styles.WrapperResult>
+        )
       )}
       <Styles.WrapperMessage>
         <TextField
@@ -124,8 +161,20 @@ export const App = () => {
           Decodificar
         </LoadingButton>
       </Styles.WrapperMessage>
-      {!!decodeData?.word && (
-        <Styles.WrapperResult>{decodeData.word}</Styles.WrapperResult>
+      {algorithm === "huffman" && (
+        <TextField
+          fullWidth
+          label="Árvore para ser utilizada na decodificação do algoritmo Huffman"
+          value={huffmanDecodingTree}
+          onChange={handleChangeHuffmanDecodingTree}
+        />
+      )}
+      {algorithm === "huffman" && huffmanDecoded ? (
+        <Styles.WrapperResult>{huffmanDecoded}</Styles.WrapperResult>
+      ) : (
+        !!decodeData?.word && (
+          <Styles.WrapperResult>{decodeData.word}</Styles.WrapperResult>
+        )
       )}
     </Styles.Wrapper>
   );

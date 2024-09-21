@@ -25,4 +25,5 @@ export const WrapperMessage = styled(Box)(({ theme }) => ({
 
 export const WrapperResult = styled(Card)(({ theme }) => ({
   padding: theme.spacing(2),
+  wordBreak: "break-word",
 }));

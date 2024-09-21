@@ -11,8 +11,8 @@ cors = CORS(app, origins="*")
 def algorithms():
   return jsonify({
     "algorithms": [
-      {"key": "eliasgamma", "name": "Elias-Gamma"},
       {"key": "golomb", "name": "Golomb"},
+      {"key": "eliasgamma", "name": "Elias-Gamma"},
       {"key": "fib", "name": "Fibonacci/Zeckendorf"},
     ]
   })
