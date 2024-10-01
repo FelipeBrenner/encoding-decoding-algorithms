@@ -1,9 +1,16 @@
 # encoding-decoding-algorithms
 
-## Running the server
+## Building the app
+
+```bash
+$ docker-compose build
+```
+
+
+## Running the app
 
 ```bash
 $ docker-compose up
 ```
 
-Server is running!
+#### Client and Server are running!
