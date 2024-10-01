@@ -1,7 +1,7 @@
 from typing import Protocol
 
 
-class Encoding(Protocol):
+class Coding(Protocol):
 
     def encode(symbol):
         raise NotImplementedError
@@ -10,12 +10,11 @@ class Encoding(Protocol):
         raise NotImplementedError
 
 
-
-# - Elias-Gamma Encoding
-# Prefix = max(2**N) lower than decimal symbol
-# Stopbit = 1
-# Suffix = rest as binary, same len as prefix filled with 0
-class EliasGammaEncoding:
+class EliasGammaCoding:
+    # - Elias-Gamma Encoding
+    # Prefix = max(2**N) lower than decimal symbol
+    # Stopbit = 1
+    # Suffix = rest as binary, same len as prefix filled with 0
 
     def __init__(self):
         self.stopbit = '1'
@@ -43,10 +42,16 @@ class EliasGammaEncoding:
         suffix = codeword[bi+1:final]
         return chr( 2**len(prefix) + int(suffix, 2) )
 
-class GolombEncoding:
 
-    def __init__(self):
-        self.k = 8
+class GolombCoding:
+    # Prefix = quocient number of zeros
+    # Stopbit = 1
+    # Suffix = rest as binary
+
+    def __init__(self, k=None):
+        if k is None or not k:
+            raise ValueError("Parameter 'k' required for Golomb coding")
+        self.k = k
         self.stopbit = '1'
 
     def encode(self, symbol) -> str:
@@ -59,8 +64,9 @@ class GolombEncoding:
         prefix = codeword[:bi]
         suffix = codeword[bi+1:final]
         return chr( len(prefix) * self.k + int(suffix, 2) )
-    
-class FibEncoding:
+
+
+class FibCoding:
 
     def __init__(self):
         self.stopbit = '1'
@@ -68,7 +74,7 @@ class FibEncoding:
     def encode(self, symbol) -> str:
         d = ord(symbol)
 
-        seq = self._gen_fib_d(d)
+        seq = self._gen_fib_until(d)
         bits = ['0'] * len(seq)
 
         _total = 0
@@ -81,15 +87,16 @@ class FibEncoding:
         return ''.join(bits) + self.stopbit
 
     def decode(self, codeword) -> int:
-        seq = self._gen_fib_n(len(codeword))
+        seq = self._gen_fib_len(len(codeword))
         d = 0
         bits = list(codeword)
         for i, v in enumerate(seq):
             if bits[i] == '1':
                 d += v
         return chr(d)
-    
-    def _gen_fib_d(self, d) -> list[int]:
+
+    def _gen_fib_until(self, d) -> list[int]:
+        """ generates fibonacci sequence until it reached a decimal 'd' """
         seq = []
         last: int = 1
         next: int = 1
@@ -98,7 +105,8 @@ class FibEncoding:
             last, next = next, last + next
         return seq
 
-    def _gen_fib_n(self, n) -> list[int]:
+    def _gen_fib_len(self, n) -> list[int]:
+        """ generates fibonacci sequence of length 'n' """
         seq = []
         last: int = 1
         next: int = 1
