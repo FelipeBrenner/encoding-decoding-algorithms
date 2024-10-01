@@ -28,6 +28,7 @@ export const App = () => {
   const [algorithm, setAlgorithm] = useState("");
   const [encodingMessage, setEncodingMessage] = useState("");
   const [decodingMessage, setDecodingMessage] = useState("");
+  const [golombK, setGolombK] = useState("");
   const [huffmanEncodedTree, setHuffmanEncodedTree] = useState("");
   const [huffmanDecodingTree, setHuffmanDecodingTree] = useState("");
   const [huffmanEncoded, setHuffmanEncoded] = useState("");
@@ -55,6 +56,15 @@ export const App = () => {
     setDecodingMessage(event.target.value);
   };
 
+ const handleChangeGolombK = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = event.target.value;
+    if (/^\d*$/.test(value)) {
+      setGolombK(value);
+    }
+  };
+
   const handleChangeHuffmanDecodingTree = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -72,6 +82,7 @@ export const App = () => {
     mutateEncode({
       algorithm,
       word: encodingMessage,
+      k: parseInt(golombK, 10)
     });
   };
 
@@ -85,6 +96,7 @@ export const App = () => {
     mutateDecode({
       algorithm,
       codeword: decodingMessage.split(" "),
+      k: parseInt(golombK, 10)
     });
   };
 
@@ -161,6 +173,18 @@ export const App = () => {
           Decodificar
         </LoadingButton>
       </Styles.WrapperMessage>
+
+      {algorithm === "golomb" && (
+        <Styles.WrapperMessage>
+          <TextField
+            fullWidth
+            label="Valor de K para Golomb"
+            value={golombK}
+            onChange={handleChangeGolombK}
+
+          />
+        </Styles.WrapperMessage>
+      )}
       {algorithm === "huffman" && (
         <TextField
           fullWidth

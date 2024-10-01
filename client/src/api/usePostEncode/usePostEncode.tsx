@@ -4,6 +4,7 @@ import axios from "axios";
 interface IPostEncodeVariables {
   algorithm: string;
   word: string;
+  k?: number;
 }
 
 interface IPostEncodeResponse {

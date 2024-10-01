@@ -4,6 +4,7 @@ import axios from "axios";
 interface IPostDecodeVariables {
   algorithm: string;
   codeword: Array<string>;
+  k?: number;
 }
 
 interface IPostDecodeResponse {
