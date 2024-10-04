@@ -2,6 +2,9 @@
 # py
 *__pycache__/
 
+# pytest
+*.pytest_cache/
+
 # venv
 *.venv/
 *venv/
