@@ -24,5 +24,5 @@ def encode(text: str, coder: Coding) -> "codeword":
     return coder.encode(text)
 
 
-def decode(codeword: str, coder: Coding) -> "bits":
+def decode(codeword: str, coder: Coding) -> "text":
     return coder.decode(codeword)

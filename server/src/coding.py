@@ -1,4 +1,5 @@
 from typing import Protocol
+import math
 
 
 class Coding(Protocol):
@@ -19,7 +20,7 @@ class EliasGammaCoding:
     def __init__(self):
         self.stopbit = '1'
 
-    def encode(self, symbol) -> str:
+    def encode(self, symbol: str) -> "bits":
         d = ord(symbol)
 
         for i, j in zip(range(d), range(d)[1:]):
@@ -35,7 +36,7 @@ class EliasGammaCoding:
 
         raise ValueError(f"Could not encode symbol: {symbol}")
 
-    def decode(self, codeword) -> str:
+    def decode(self, codeword: "bits") -> str:
         bi = codeword.index(self.stopbit)
         final = len(codeword)
         prefix = codeword[:bi]
@@ -44,21 +45,27 @@ class EliasGammaCoding:
 
 
 class GolombCoding:
-    # Prefix = quocient number of zeros
+    # Prefix = quotient number of zeros
     # Stopbit = 1
     # Suffix = rest as binary
 
     def __init__(self, k=None):
         if k is None or not k:
             raise ValueError("Parameter 'k' required for Golomb coding")
+        if (math.ceil(math.log2(k)) == math.floor(math.log2(k))) is False:
+            raise ValueError("Parameter 'k' must be a power of 2")
         self.k = k
         self.stopbit = '1'
 
-    def encode(self, symbol) -> str:
-        d = ord(symbol)
-        return '0' * (d // self.k) + self.stopbit + format(d % self.k, 'b')  # prefix + stopbit + suffix
+    @property
+    def suffix_size(self):
+        return int( math.log2(self.k) )
 
-    def decode(self, codeword) -> str:
+    def encode(self, symbol: str) -> "bits":
+        d = ord(symbol)
+        return '0' * (d // self.k) + self.stopbit + format(d % self.k, f'0{self.suffix_size}b')  # prefix + stopbit + suffix (format as binary, with leading zeros)
+
+    def decode(self, codeword: "bits") -> str:
         bi = codeword.index(self.stopbit)
         final = len(codeword)
         prefix = codeword[:bi]
@@ -71,7 +78,7 @@ class FibCoding:
     def __init__(self):
         self.stopbit = '1'
 
-    def encode(self, symbol) -> str:
+    def encode(self, symbol: str) -> "bits":
         d = ord(symbol)
 
         seq = self._gen_fib_until(d)
@@ -86,7 +93,7 @@ class FibCoding:
                     break
         return ''.join(bits) + self.stopbit
 
-    def decode(self, codeword) -> int:
+    def decode(self, codeword: "bits") -> int:
         seq = self._gen_fib_len(len(codeword))
         d = 0
         bits = list(codeword)
