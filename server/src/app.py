@@ -28,7 +28,7 @@ def encode():
 		params = {k: v for k, v in request.json.items() if k != 'algorithm' and k != "word"}
 		coding: Coding = services.create_coding(algorithm, params)
 
-		codeword = [services.encode(c, coding) for c in word]
+		codeword = services.encode(word, coding)
 
 		return jsonify({"codeword": codeword})
 	except ValueError as e:
@@ -45,7 +45,7 @@ def decode():
 		params = {k: v for k, v in request.json.items() if k != 'algorithm' and k != "codeword"}
 		coding: Coding = services.create_coding(algorithm, params)
 
-		word = [services.decode(s, coding) for s in codeword]
+		word = services.decode(codeword, coding)
 
 		return jsonify({"word": word})
 	except ValueError as e:

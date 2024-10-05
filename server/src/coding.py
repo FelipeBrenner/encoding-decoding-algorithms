@@ -20,7 +20,36 @@ class EliasGammaCoding:
     def __init__(self):
         self.stopbit = '1'
 
-    def encode(self, symbol: str) -> "bits":
+    def encode(self, text: str) -> "codeword":
+        encoded_text = []
+        for symbol in text:
+            encoded_text.append(self._encode(symbol))
+        return ''.join(encoded_text)
+
+    def decode(self, codeword: "bits") -> str:
+        decoded_text = []
+        p = 0
+        while p < len(codeword):
+            # Find the stop bit
+            sbidx = codeword.index(self.stopbit, p)
+            prefix_len = sbidx - p
+
+            # Get the prefix and suffix
+            prefix = codeword[p:sbidx]
+            sufstart = sbidx + 1
+            final = sufstart + prefix_len
+            suffix = codeword[sufstart:final]
+
+            # Decode the character and add to result
+            decoded_char = chr(2**len(prefix) + int(suffix, 2))
+            decoded_text.append(decoded_char)
+
+            # Move pointer to the next symbol in the encoded text
+            p = final
+
+        return ''.join(decoded_text)
+
+    def _encode(self, symbol: str) -> str:
         d = ord(symbol)
 
         for i, j in zip(range(d), range(d)[1:]):
@@ -34,13 +63,11 @@ class EliasGammaCoding:
                 suffix = _fill + suffix
                 return prefix + self.stopbit + suffix
 
-        raise ValueError(f"Could not encode symbol: {symbol}")
-
-    def decode(self, codeword: "bits") -> str:
-        bi = codeword.index(self.stopbit)
-        final = len(codeword)
-        prefix = codeword[:bi]
-        suffix = codeword[bi+1:final]
+    def _decode(self, bits: str) -> str:
+        bi = bits.index(self.stopbit)
+        final = len(bits)
+        prefix = bits[:bi]
+        suffix = bits[bi+1:final]
         return chr( 2**len(prefix) + int(suffix, 2) )
 
 
@@ -61,15 +88,42 @@ class GolombCoding:
     def suffix_size(self):
         return int( math.log2(self.k) )
 
-    def encode(self, symbol: str) -> "bits":
+    def encode(self, text: str) -> "codeword":
+        encoded_text = []
+        for symbol in text:
+            encoded_text.append(self._encode(symbol))
+        return ''.join(encoded_text)
+
+    def decode(self, codeword: "bits") -> str:
+        decoded_text = []
+        p = 0
+        while p < len(codeword):
+            # Find the stop bit
+            sbidx = codeword.index(self.stopbit, p)
+
+            # Get the prefix and suffix
+            prefix = codeword[p:sbidx]
+            sufstart = sbidx + 1
+            final = sufstart + self.suffix_size
+            suffix = codeword[sufstart:final]
+
+            # Decode the character and add to result
+            decoded_char = chr( len(prefix) * self.k + int(suffix, 2) )
+            decoded_text.append(decoded_char)
+
+            # Move pointer to the next symbol in the encoded text
+            p = final
+        return ''.join(decoded_text)
+
+    def _encode(self, symbol: str) -> "bits":
         d = ord(symbol)
         return '0' * (d // self.k) + self.stopbit + format(d % self.k, f'0{self.suffix_size}b')  # prefix + stopbit + suffix (format as binary, with leading zeros)
 
-    def decode(self, codeword: "bits") -> str:
-        bi = codeword.index(self.stopbit)
-        final = len(codeword)
-        prefix = codeword[:bi]
-        suffix = codeword[bi+1:final]
+    def _decode(self, bits: str) -> str:
+        bi = bits.index(self.stopbit)
+        final = len(bits)
+        prefix = bits[:bi]
+        suffix = bits[bi+1:final]
         return chr( len(prefix) * self.k + int(suffix, 2) )
 
 
@@ -78,7 +132,37 @@ class FibCoding:
     def __init__(self):
         self.stopbit = '1'
 
-    def encode(self, symbol: str) -> "bits":
+    def encode(self, text: str) -> "codeword":
+        encoded_text = []
+        for symbol in text:
+            encoded_text.append(self._encode(symbol))
+        return ''.join(encoded_text)
+
+    def decode(self, codeword: "bits") -> int:
+        decoded_text = []
+        p = 0
+        while p < len(codeword):
+            bits: str = self._find_next_bits(codeword[p:])
+
+            # Decode the character and add to result
+            decoded_char = self._decode(bits)
+            decoded_text.append(decoded_char)
+
+            # Move pointer to the next symbol in the encoded text
+            p += len(bits)
+        return ''.join(decoded_text)
+
+    def _find_next_bits(self, codeword) -> "bits":
+        bits = ""
+        for b1, b2 in zip(codeword, codeword[1:]):
+            if b1 == '1' and b2 == '1':
+                bits += b1
+                bits += b2
+                return bits
+            bits += b1
+        return bits
+
+    def _encode(self, symbol: str) -> "bits":
         d = ord(symbol)
 
         seq = self._gen_fib_until(d)
@@ -93,10 +177,10 @@ class FibCoding:
                     break
         return ''.join(bits) + self.stopbit
 
-    def decode(self, codeword: "bits") -> int:
-        seq = self._gen_fib_len(len(codeword))
+    def _decode(self, bits: str) -> str:
+        seq = self._gen_fib_len(len(bits))
         d = 0
-        bits = list(codeword)
+        bits = list(bits)
         for i, v in enumerate(seq):
             if bits[i] == '1':
                 d += v

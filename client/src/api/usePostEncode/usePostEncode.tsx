@@ -8,7 +8,7 @@ interface IPostEncodeVariables {
 }
 
 interface IPostEncodeResponse {
-  codeword: Array<string>;
+  codeword: string;
 }
 
 export const usePostEncode = () => {

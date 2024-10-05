@@ -95,7 +95,7 @@ export const App = () => {
 
     mutateDecode({
       algorithm,
-      codeword: decodingMessage.split(" "),
+      codeword: decodingMessage,
       k: parseInt(golombK, 10)
     });
   };
@@ -152,7 +152,7 @@ export const App = () => {
       ) : (
         !!encodeData?.codeword?.length && (
           <Styles.WrapperResult>
-            {encodeData?.codeword.map((word) => word).join(" ")}
+            {encodeData?.codeword}
           </Styles.WrapperResult>
         )
       )}
