@@ -29,11 +29,12 @@ def test_encode_decode_round_trip_elias_gamma(elias_gamma):
         decoded = elias_gamma.decode(encoded)
         assert decoded == char, f"Failed round-trip for {char}"
 
-# def test_encode_text_elias_gamma(elias_gamma):
-#     assert elias_gamma.encode('Test !') == '00000010101000000001100101000000111001100000011101000000010000000000100001'
-#
-# def test_decode_codeword_elias_gamma(elias_gamma):
-#     assert elias_gamma.decode('00000010101000000001100101000000111001100000011101000000010000000000100001') == 'Test !'
+def test_encode_text_elias_gamma(elias_gamma):
+    assert elias_gamma.encode('Test !') == '00000010101000000001100101000000111001100000011101000000010000000000100001'
+
+def test_decode_codeword_elias_gamma(elias_gamma):
+    assert elias_gamma.decode('00000010101000000001100101000000111001100000011101000000010000000000100001') == 'Test !'
+
 
 # GolombCoding tests
 @pytest.fixture
@@ -62,11 +63,11 @@ def test_encode_decode_round_trip_golomb(golomb):
         decoded = golomb.decode(encoded)
         assert decoded == char, f"Failed round-trip for {char}"
 
-# def test_encode_text_golomb(golomb):
-#     assert golomb.encode('Test !') == '00000000001100 0000000000001101 00000000000000111 000000000000001100 000010 000011'
-#
-# def test_decode_codeword_golomb(golomb):
-#     assert golomb.decode('') == ''
+def test_encode_text_golomb(golomb):
+    assert golomb.encode('Test !') == '0000000000110000000000000011010000000000000010110000000000000011000000100000001001'
+
+def test_decode_codeword_golomb(golomb):
+    assert golomb.decode('0000000000110000000000000011010000000000000010110000000000000011000000100000001001') == 'Test !'
 
 
 
@@ -96,3 +97,9 @@ def test_encode_decode_round_trip_fib(fib):
         encoded = fib.encode(char)
         decoded = fib.decode(encoded)
         assert decoded == char, f"Failed round-trip for {char}"
+
+def test_encode_text_fib(fib):
+    assert fib.encode('Test !') == '00001010111010100001100010010011100100100110010101110101011'
+
+def test_decode_codeword_fib(fib):
+    assert fib.decode('00001010111010100001100010010011100100100110010101110101011') == 'Test !'
